@@ -1,6 +1,7 @@
 #ifndef GBA_H
 #define GBA_H
 
+#define TESTVALUE = 50;
 // Typedefs
 typedef signed char s8;
 typedef unsigned char u8;
