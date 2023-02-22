@@ -14,47 +14,29 @@ typedef struct {
 typedef struct {
     int x;
     int y;
-    int oldx;
-    int oldy;
-    int xVelocity;
     int yVelocity;
-    int width;
+    int active;
     int height;
-    unsigned short color;
-} OBSTACLE;
-
-typedef struct {
-    int x;
-    int y;
-    int oldx;
-    int oldy;
-    int xVelocity;
-    int yVelocity;
     int width;
-    int height;
     unsigned short color;
-} POWERUP;
+} BULLET;
 
 // constants
-#define OBSCOUNT 10
+#define BCOUNT 10
+
+// function prototypes for bullet
+void initBullets();
+void updateBullet(BULLET* b);
+void drawBullet(BULLET* b);
 
 // variables
-extern OBSTACLE obstacles[OBSCOUNT];
-extern POWERUP powerup;
 extern PLAYER player;
+extern BULLET bullet;
+extern BULLET bullets[BCOUNT];
 extern int score;
-extern int poweredUp;
 
 // function prototypes
-void ignoreCollision();
+// init
 void initGame();
 void initPlayer();
-void initObstacles();
 
-void updateGame();
-void updatePlayer();
-void updateObstacles(OBSTACLE* obs);
-void drawGame();
-void drawPlayer();
-void drawObstacles(OBSTACLE* obs);
-void newObstacle();

@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "sound.h": "c",
+        "gba.h": "c"
+    }
+}
