@@ -112,8 +112,10 @@ void drawPlayer() {
 void initObstacles() {
     for (int i = 0; i < OCOUNT; i++) {
         int lane = rand()% 3 + 1;
-        int randHeight = rand() % 50 + 10;
-        obstacles[i].y = 30;
+        int randHeight = rand()% 50 + 10;
+        int obsType = rand()% 3 + 1;
+        obstacles[i].y = 0;
+        obstacles[i].x = 0;
         obstacles[i].width = 25;
         obstacles[i].height = randHeight;
         obstacles[i].yVelocity = 0;
@@ -130,6 +132,27 @@ void initObstacles() {
                 obstacles[i].x = 135;
                 break;
         }
+    }
+}
 
+
+
+// void newObstacle() {
+//     switch(obsType) {
+//             case 1:
+//                 obstacles[i].color = MAGENTA;
+//                 break;
+//             case 2:
+//                 obstacles[i].color = RED;
+//                 break;
+//             case 3: 
+//                 obstacles[i].color = WHITE;
+//                 break;
+//     }
+// }
+
+void updateObstacles(OBSTACLE* o) {
+    if (o->active) {
+        if (/* check collision for player */)
     }
 }
