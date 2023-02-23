@@ -5,6 +5,7 @@
 
 PLAYER player;
 BULLET bullets[BCOUNT];
+OBSTACLE obstacles[OCOUNT];
 // score & statuses
 int score;
 int spawned;
@@ -21,14 +22,14 @@ void initGame() {
 }
 
 void initPlayer() {
-    player.y = 154;
-    player.x = 117;
+    player.y = 145;
+    player.x = 110;
     player.oldx = player.x;
     player.oldy = player.y;
     player.xVelocity = 0;
     player.height = 10;
-    player.width = 10;
-    player.color = WHITE;
+    player.width = 15;
+    player.color = GRAY;
 }
 
 void initBullets() {
@@ -45,6 +46,7 @@ void initBullets() {
 
 void updateGame() {
     updatePlayer();
+    
     // for (int i = 0; i < BCOUNT; i++) {
     //     updateBullet(&bullets[i]);
     // }
@@ -53,23 +55,81 @@ void updateGame() {
 }
 
 void updatePlayer() {
-    if (BUTTON_HELD(BUTTON_LEFT) && player.x - 1 > 60) {
-        player.xVelocity = -4;
+    if (BUTTON_HELD(BUTTON_LEFT) && player.x - 2 > 70) {
+        player.xVelocity = -2;
     }
-    else if (BUTTON_HELD(BUTTON_RIGHT) && player.x + 1 < 180) {
-        player.xVelocity = 4;
-    }
+    else if (BUTTON_HELD(BUTTON_RIGHT) && player.x + player.width + 2 < 165) {
+        player.xVelocity = 2;
+    } 
     else {
         player.xVelocity = 0;
+        player.color = GRAY;
     }
 
+    if (BUTTON_HELD(BUTTON_A)) {
+        player.color = RED;
+    } else if (BUTTON_HELD(BUTTON_B)) {
+        player.color = MAGENTA;
+    }
     player.oldx = player.x;
     player.x += player.xVelocity;
 }
 
 void drawGame() {
+    drawRect(66, 30, 1, 130, WHITE);
+    drawRect(68, 30, 1, 130, WHITE);
+    
+    drawRect(165, 30, 1, 130, WHITE);
+    drawRect(167, 30, 1, 130, WHITE);
+
+    drawRect(99, 30, 1, 130, WHITE);
+    drawRect(101, 30, 1, 130, WHITE);
+
+    drawRect(132, 30, 1, 130, WHITE);
+    drawRect(134, 30, 1, 130, WHITE);
+
+    drawRect(66, 27, 102, 3, WHITE);
+
+    drawString(95, 10, "GBA RUN", BLUE);
+    int i = 40;
+    while (i < 160) {
+        drawRect(80, i, 70, 2, BLACK);
+        i += 20;
+    }
+    
     drawPlayer();
     // for (int i = 0; i < BCOUNT; i++) {
     //     drawBullet(&bullets[i]);
     // }
+    
+}
+
+void drawPlayer() {
+    drawRect(player.oldx, player.oldy, player.width, player.height, BLACK);
+    drawRect(player.x, player.y, player.width, player.height, player.color);
+}
+
+void initObstacles() {
+    for (int i = 0; i < OCOUNT; i++) {
+        int lane = rand()% 3 + 1;
+        int randHeight = rand() % 50 + 10;
+        obstacles[i].y = 30;
+        obstacles[i].width = 25;
+        obstacles[i].height = randHeight;
+        obstacles[i].yVelocity = 0;
+        obstacles[i].active = 0;
+        obstacles[i].erased = 1;
+        switch(lane) {
+            case 1:
+                obstacles[i].x = 66 + 5;
+                break;
+            case 2:
+                obstacles[i].x = 66 + 33 + 5;
+                break;
+            case 3:
+                obstacles[i].x = 135;
+                break;
+        }
+
+    }
 }
