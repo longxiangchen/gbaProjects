@@ -5,19 +5,19 @@
 volatile unsigned short *videoBuffer = (unsigned short *)0x6000000;
 
 // Draws a rectangle in mode 3
-void drawRect(int x, int y, int width, int height, unsigned short color) {
+void drawRect(int x, int y, int width, int height, volatile unsigned short color) {
+    //TODO 3.2: Change this to use DMA
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            setPixel(x + j, y + i, color);
-        }
+        DMANow(3, &color, &videoBuffer[OFFSET(x, y + i, 240)], DMA_SOURCE_FIXED | DMA_DESTINATION_INCREMENT | (width));
     }
+    
 }
 
 // Fills the screen in mode 3
-void fillScreen(unsigned short color) {
-    for (int i = 0; i < 240 * 160; i++) {
-        videoBuffer[i] = color;
-    }
+void fillScreen(volatile unsigned short color) {
+    //TODO 3.1: Change this to use DMA
+    DMANow(3, &color, videoBuffer, DMA_SOURCE_FIXED | DMA_DESTINATION_INCREMENT | (240 * 160));
+
 }
 
 // Checks for collision between two rectangles
@@ -47,4 +47,25 @@ void drawString(int x, int y, char *str, unsigned short color) {
         str++;
         x += 6;
     }
+}
+
+// Pointer to the start of DMA registers
+DMA *dma = (DMA *)0x40000B0;
+
+// Immediately begins a DMA transfer using parameters
+void DMANow(int channel, volatile const void *src, volatile void *dst, unsigned int cnt) {
+    // TODO 3.0: Complete this function
+    // Remember to write this function to work with any passed in channel (0, 1, 2, 3).
+
+    // Clear cnt in the specified DMA channel
+    dma[channel].cnt = 0;
+
+    // Set the src of the specified dma channel to the passed in src
+    dma[channel].src = src;
+
+    // Set the dst of the specified dma channel to the passed in dst
+    dma[channel].dst = dst;
+
+    // Set the cnt of the specified dma channel to the passed in cnt and turn the dma channel on
+    dma[channel].cnt = DMA_ON | cnt;
 }

@@ -41,6 +41,7 @@ enum {
 int state;
 int rSeed;
 int score;
+int highScore;
 
 int main() {
     initialize();
@@ -59,9 +60,9 @@ int main() {
             case PAUSE:
                 pause();
                 break;
-            // case LOSE:
-            //     lose();
-            //     break;
+            case LOSE:
+                lose();
+                break;
         }
     }
 }
@@ -69,7 +70,7 @@ int main() {
 void initialize()
 {
     REG_DISPCTL = MODE(3) | BG2_ENABLE;
-
+    
     // enabling + setting up sound
     // TODO 4.0: enable sounds in the sound on/off register
     REG_SOUNDCNT_X = SND_ENABLED;
@@ -109,6 +110,7 @@ void goToStart() {
     state = START;
     // begin the seed randomization
     rSeed = 0;
+    player.health = 1;
 }
 
 void start() {
@@ -120,23 +122,37 @@ void start() {
         initGame();
         goToGame();
     }
+
+    REG_SND2CNT = DMG_ENV_VOL(0) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
+    REG_SND2FREQ = NOTE_G6 | SND_RESET | DMG_FREQ_TIMED;
+    REG_SND1SWEEP = DMG_SWEEP_NUM(0) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
 }
 
 void game() {
+    
     updateGame();
 
+    sprintf(buffer, "%d", score);
+    
     mgba_open();
-    mgba_printf("game");
-
     waitForVBlank();
+    drawRect(210, 1, 50, 8, BLACK);
+    drawString(210, 1, buffer, WHITE);
     drawGame();
     if (BUTTON_PRESSED(BUTTON_SELECT)) {
         goToPause();
     }
+    if (player.health < 1) {
+        goToLose();
+    }
+    REG_SND2CNT = DMG_ENV_VOL(0) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
+    REG_SND2FREQ = NOTE_G6 | SND_RESET | DMG_FREQ_TIMED;
+    REG_SND1SWEEP = DMG_SWEEP_NUM(0) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
 }
 
 void goToGame() {
     fillScreen(BLACK);
+    drawString(175, 1, "SCORE:", WHITE);
     state = GAME;
 }
 
@@ -153,7 +169,31 @@ void pause() {
     if (BUTTON_PRESSED(BUTTON_START)) {
         goToGame();
     } else if (BUTTON_PRESSED(BUTTON_SELECT)) {
-        goToStart();
+        goToLose();
     }
+    REG_SND2CNT = DMG_ENV_VOL(5) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
+    REG_SND2FREQ = NOTE_G6 | SND_RESET;
+    REG_SND1SWEEP = DMG_SWEEP_NUM(7) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
 }
 
+void goToLose() {
+    fillScreen(BLACK);
+    drawString(136, 8, "GAME OVER", ROGUE);
+    drawString(130, 18, "YOUR SCORE: ", ROGUE);
+    drawString(130, 28, "HIGH SCORE: ", ROGUE);
+    sprintf(buffer, "%d", score);
+    drawString(195, 18, buffer, WHITE);
+    sprintf(buffer, "%d", highScore);
+    drawString(195, 28, buffer, WHITE);
+    state = LOSE;
+}
+
+void lose() {
+    waitForVBlank();
+    if (BUTTON_PRESSED(BUTTON_START)) {
+        goToStart();
+    }
+    REG_SND2CNT = DMG_ENV_VOL(0) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
+    REG_SND2FREQ = NOTE_G6 | SND_RESET | DMG_FREQ_TIMED;
+    REG_SND1SWEEP = DMG_SWEEP_NUM(0) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
+}

@@ -1,30 +1,22 @@
 // structs
-
 typedef struct {
     int x;
     int y;
     int oldx;
     int oldy;
     int xVelocity;
+    int yVelocity;
     int width;
     int height;
+    int health;
     unsigned short color;
 } PLAYER;
 
 typedef struct {
     int x;
     int y;
-    int yVelocity;
-    int active;
-    int height;
-    int width;
-    unsigned short color;
-} BULLET;
-
-
-typedef struct {
-    int x;
-    int y;
+    int oldX;
+    int oldY;
     int yVelocity;
     int active;
     int height;
@@ -34,27 +26,38 @@ typedef struct {
     int erased;
 } OBSTACLE;
 
+
 // constants
-#define BCOUNT 10
-#define OCOUNT 10
-// function prototypes for bullet
-void initBullets();
-void updateBullet(BULLET* b);
-void drawBullet(BULLET* b);
+#define OCOUNT 30
+
+// variables
+extern PLAYER player;
+extern OBSTACLE obstacles[OCOUNT];
+extern int score;
+extern int time;
+extern unsigned short healthIndicator;
+extern int poweredDown;
+extern int poweredUp;
+extern int spawnDelay;
+extern int highScore;
+
+// function prototypes
+// game
+void initGame();
+void updateGame();
+void drawGame();
+
+// player
+void initPlayer();
+void updatePlayer();
+void drawPlayer();
 
 // function prototypes for OBSTACLES
 void initObstacles();
 void updateObstacle(OBSTACLE* o);
 void drawObstacle(OBSTACLE* o);
-// variables
-extern PLAYER player;
-extern BULLET bullet;
-extern BULLET bullets[BCOUNT];
-extern OBSTACLE obstacles[OCOUNT];
-extern int score;
+void newObstacle();
 
-// function prototypes
-// init
-void initGame();
-void initPlayer();
-void updatePlayer();
+// mgba for debugging
+void mgba_open();
+void mgba_printf();
