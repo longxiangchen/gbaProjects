@@ -46,9 +46,18 @@ void waitForVBlank();
 #define RED     COLOR(31,0,0)
 #define GREEN   COLOR(0,31,0)
 #define BLUE    COLOR(0,0,31)
-#define CYAN    COLOR(0,31,31)
+#define GAMEBG  COLOR(18,29,31)
 #define MAGENTA COLOR(31,0,31)
 #define YELLOW  COLOR(31,31,0)
+
+// Pretty colors
+#define DEEPRED COLOR(23,7,7)
+#define SALMON COLOR(23,10,10)
+#define MAROON COLOR(18,9,9)
+#define BROWN COLOR(10,6,5)
+#define GREY COLOR(5,3,3)
+#define GOLD COLOR(26,18,1)
+#define PINK COLOR(27,25,25)
 
 // Checks for collision between two rectangles
 int collision(int x1, int y1, int width1, int height1, int x2, int y2, int width2, int height2);
