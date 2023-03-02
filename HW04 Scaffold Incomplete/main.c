@@ -132,9 +132,9 @@ void game() {
     drawGame();
 
     // update the score
-    // drawString4(180, 1, "score: ", GOLDID);
-    // sprintf(buffer, "%d", score);
-    // drawString4(220, 1, buffer, GOLDID);
+    drawString4(10, 1, "time elapsed: ", GOLDID);
+    sprintf(buffer, "%d", score);
+    drawString4(90, 1, buffer, GOLDID);
 
     waitForVBlank();
     flipPage();
@@ -152,6 +152,15 @@ void game() {
     if (collision(player.x, player.y, player.width, player.height, escape.x, escape.y, escape.width, escape.height)) {
         goToWin();
     }
+    if (player.dodge) {
+        player.dodgeTimer++;
+        if (player.dodgeTimer == 50) {
+            player.dodgeTimer = 0;
+            player.dodge = 0;
+            player.dodgeCooldown = 60 * 5;
+        }
+    }
+    player.dodgeCooldown--;
 }
 
 // Sets up the pause state
@@ -179,10 +188,20 @@ void pause() {
 
 // Sets up the win state
 void goToWin() {
-    // fillScreen4(GOLDID);
-    // drawString4(154, 8, "omg you won!!!", PINKID);
-    // drawString4(88, 18, "press start to play again", PINKID);
+    if (score < bestTime) {
+        bestTime = score;
+    }
+    fillScreen4(MAROONID);
+    drawString4(100, 8, "YOU WON!", GOLDID);
+    
+    drawString4(30, 18, "PRESS START TO RESTART THE GAME", GOLDID);
 
+    drawString4(56, 28, "YOUR TIME: ", PINKID);
+    drawString4(56, 38, "BEST TIME: ", PINKID);
+    sprintf(buffer, "%d seconds", score);
+    drawString4(127, 28, buffer, PINKID);
+    sprintf(buffer, (bestTime != 10000) ? "%d seconds" : "NIL", bestTime);
+    drawString4(127, 38, buffer, PINKID);
     // TODO 2.3: wait for vBlank and flip the page
     waitForVBlank();
     flipPage();
@@ -201,9 +220,16 @@ void win() {
 
 // Sets up the lose state
 void goToLose() {
+    score = 0;
     fillScreen4(SALMONID);
-    drawString4(172, 8, "you lost :(", PINKID);
-    drawString4(494, 28, "press start to try again", PINKID);
+    drawString4(90, 8, "GAME OVER", PINKID);
+    drawString4(80, 130, "press start to try again", PINKID);
+    drawString4(56, 18, "YOUR TIME: ", PINKID);
+    drawString4(56, 28, "BEST TIME: ", PINKID);
+    sprintf(buffer, (score == 0) ? "you died" : "%d seconds", score);
+    drawString4(126, 18, buffer, PINKID);
+    sprintf(buffer, (bestTime != 10000) ? "%d seconds" : "NIL", bestTime);
+    drawString4(126, 28, buffer, PINKID);
 
     // TODO 2.4: wait for vBlank and flip the page
     waitForVBlank();

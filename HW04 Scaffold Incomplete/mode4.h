@@ -13,5 +13,5 @@ void drawRect4(int x, int y, int width, int height, volatile unsigned char color
 void fillScreen4(volatile unsigned char colorIndex);
 void drawImage4(int x, int y, int width, int height, const unsigned short *image);
 void drawFullscreenImage4(const unsigned short *image);
-
+void drawString4(int x, int y, char *str, unsigned short color);
 #endif

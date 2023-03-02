@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "sonic.h"
+#include "dodge.h"
+#include "eggman.h"
 
 PLAYER player;
 VILLAIN eggman;
@@ -13,34 +15,42 @@ ESCAPE escape;
 
 //imports
 int score;
-int time;
-int highScore;
+int bulletDelayCounter;
+int bulletDelay;
+int bestTime = 10000;
 // native variable
 int count;
+int frames;
+volatile void *playerPal = sonicPal;
+unsigned short *playerBitmap = sonicBitmap;
 
 void initGame() {
+    bulletDelay = 30;
+    frames = 0;
     initEscape();
     initPlayer();
     initBullets();
     initVillain();
     unsigned short colors[NUMCOLORS] = {BLACK, GREY, MAROON, GAMEBG, GOLD, BROWN, SALMON, PINK};
     DMANow(3, sonicPal, PALETTE, 256);  
-    score = 0;
-    time = 0;
+    score = NULL;
+    bulletDelayCounter = 0;
     for (int i = 0; i < NUMCOLORS; i++) {
         PALETTE[256-NUMCOLORS+i] = colors[i];
     }
 }
 
 void initPlayer() {
-    player.y = 100;
-    player.x = 10;
+    player.y = 60;
+    player.x = 0;
     player.dy = 0;
     player.dx = 0;
-    player.height = 12;
-    player.width = 16;
+    player.width = 28;
+    player.height = 24;
     player.lives = 3;
     player.dodge = 0;
+    player.dodgeTimer = 0;
+    player.dodgeCooldown = 0; // seconds
 }
 
 void initBullets() {
@@ -69,40 +79,45 @@ void initVillain() {
 }
 
 void initEscape() {
-    int randEscapeY = rand()% 150 + 1;
-    escape.x = 220;
-    escape.y = randEscapeY;
+    escape.x = 223;
+    escape.y = 0;
     escape.width = 10;
-    escape.height = 10;
+    escape.height = 160;
     escape.color = SALMONID;
 }
 
 void drawEscape() {
     drawRect4(escape.x, escape.y, escape.width, escape.height, escape.color);
 }
+
 void updateGame() {
-    time++;
-    score++;
+    bulletDelayCounter++;
+    frames++;
+    if (frames >= 60) {
+        frames = 0;
+        score++;
+    }
     updatePlayer();
     updateVillain();
     // update bullets
-    if (time >= 12) {
+    if (bulletDelayCounter >= bulletDelay) {
         newBullet();
-        time = 0;
-        count++;
+        bulletDelayCounter = 0;
     }
 
     for (int i = 0; i < BCOUNT; i++) {
         updateBullet(&bullets[i]);
     }
-
-    if (score > highScore) {
-        highScore = score;
-    }
 }
 
 void updatePlayer() {
-    if (player.y < 4 || player.x + player.width > 238 || player.y + player.height > 157 || player.x < 2) {
+    if (!player.dodge) {
+        playerPal = sonicPal;
+        playerBitmap = sonicBitmap;
+    } else {
+        playerBitmap = dodgeBitmap;
+    }
+    if (player.y < 40 || player.x + player.width > 238 || player.y + player.height > 157 || player.x < 2) {
         player.dy = 0;
         player.dx = 0;
     }
@@ -111,10 +126,10 @@ void updatePlayer() {
         player.x = 10;
         player.y = 80;
     }
-    if (BUTTON_PRESSED(BUTTON_RSHOULDER)) {
+    if ((BUTTON_PRESSED(BUTTON_RSHOULDER) || BUTTON_PRESSED(BUTTON_LSHOULDER)) && player.dodgeCooldown <= 0) {
         player.dodge = 1;
     }
-    if (BUTTON_HELD(BUTTON_UP) && player.y > 4) {
+    if (BUTTON_HELD(BUTTON_UP) && player.y > 10) {
         player.dy = -2;
     } else if (BUTTON_HELD(BUTTON_DOWN) && player.y + player.height < 155) {
         player.dy = 2;
@@ -160,7 +175,7 @@ void drawGame() {
 }
 
 void drawPlayer() {
-    drawImage4(player.x, player.y, player.width, player.height, sonicBitmap);
+    drawImage4(player.x, player.y, player.width, player.height, playerBitmap);
 }
 
 void drawVillain() {
@@ -174,8 +189,9 @@ void updateBullet(BULLET *b) {
             player.x = 10;
             player.y = 80;
             b->active = 0;
+            initBullets();
         }
-        if (b->x < 10) {
+        if (b->x < 30) {
             b->active = 0;
         }
     }
@@ -196,7 +212,7 @@ void newBullet() {
         if (!bullets[i].active) {
             bullets[i].x = eggman.x;
             bullets[i].y = eggman.y + (eggman.height / 2);
-            bullets[i].dx = -2;
+            bullets[i].dx = -1;
             bullets[i].active = 1;
             found = 1;
         }

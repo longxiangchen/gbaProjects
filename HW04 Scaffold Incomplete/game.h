@@ -9,6 +9,8 @@ typedef struct {
     int height;
     int lives;
     int dodge;
+    int dodgeTimer;
+    int dodgeCooldown;
 } PLAYER;
 
 typedef struct {
@@ -39,7 +41,7 @@ typedef struct {
 } ESCAPE;
 
 // number of bullets
-#define BCOUNT 80
+#define BCOUNT 15
 
 // variables
 extern PLAYER player;
@@ -47,9 +49,26 @@ extern VILLAIN eggman;
 extern ESCAPE escape;
 extern BULLET bullets[BCOUNT];
 extern int score;
-extern int time;
-extern int highScore;
+extern int bulletDelay;
+extern int bestTime;
 
 #define NUMCOLORS 8
 enum {BLACKID=(256-NUMCOLORS), GREYID, MAROONID, GAMEBGID, GOLDID, BROWNID, SALMONID, PINKID};
 extern unsigned short colors[NUMCOLORS];
+
+// function prototypes
+void initGame();
+void initPlayer();
+void initBullets();
+void initVillain();
+void initEscape();
+void drawEscape();
+void updateGame();
+void updatePlayer();
+void updateVillain();
+void drawGame();
+void drawPlayer();
+void drawVillain();
+void updateBullet(BULLET *b);
+void drawBullet(BULLET *b);
+void newBullet();
