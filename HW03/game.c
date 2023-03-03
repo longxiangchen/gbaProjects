@@ -5,6 +5,7 @@
 
 PLAYER player;
 OBSTACLE obstacles[OCOUNT];
+int frames;
 
 // score & statuses
 int score;
@@ -25,6 +26,7 @@ void initGame() {
     time = 0;
     poweredDown = 0;
     poweredUp = 0;
+    frames = 0;
     // init structs
     initPlayer();
     initObstacles();
@@ -59,9 +61,12 @@ void initObstacles() {
 }
 
 void updateGame() {
-
     time++;
-    score++;
+    frames++;
+    if (frames >= 60) {
+        frames = 0;
+        score++;
+    }
     updatePlayer();
 
     for (int i = 0; i < OCOUNT; i++) {
