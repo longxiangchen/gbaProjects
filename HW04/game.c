@@ -32,10 +32,10 @@ void initGame() {
     initPlayer();
     initBullets();
     initVillain();
-    unsigned short colors[NUMCOLORS] = {BLACK, GREY, MAROON, GAMEBG, GOLD, BROWN, SALMON, PINK};
     DMANow(3, sonicPal, PALETTE, 256);  
     score = NULL;
     bulletDelayCounter = 0;
+    unsigned short colors[NUMCOLORS] = {BLACK, GREY, MAROON, GAMEBG, GOLD, BROWN, SALMON, PINK};
     for (int i = 0; i < NUMCOLORS; i++) {
         PALETTE[256-NUMCOLORS+i] = colors[i];
     }
@@ -186,6 +186,7 @@ void drawVillain() {
 void updateBullet(BULLET *b) {
     if (b->active) {
         if (!player.dodge && collision(b->x, b->y, b->width, b->height, player.x, player.y, player.width, player.height)) {
+            REG_SOUNDCNT_H = DMG_MASTER_VOL(2);
             REG_SND2CNT = DMG_ENV_VOL(5) | DMG_DIRECTION_DECR | DMG_STEP_TIME(7) | DMG_DUTY_50;
             REG_SND2FREQ = NOTE_FS4 | SND_RESET | DMG_FREQ_TIMED;
             REG_SND1SWEEP = DMG_SWEEP_NUM(7) | DMG_SWEEP_STEPTIME(7) | DMG_SWEEP_DOWN;
@@ -222,4 +223,9 @@ void newBullet() {
         }
         i++;
     }
+
+    REG_SOUNDCNT_H = DMG_MASTER_VOL(4);
+    REG_SND2CNT = DMG_ENV_VOL(5) | DMG_DIRECTION_DECR | DMG_STEP_TIME(7) | DMG_DUTY_50;
+    REG_SND2FREQ = NOTE_G7 | SND_RESET | DMG_FREQ_TIMED;
+    REG_SND1SWEEP = DMG_SWEEP_NUM(7) | DMG_SWEEP_STEPTIME(7) | DMG_SWEEP_DOWN;
 }

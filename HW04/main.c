@@ -24,6 +24,8 @@ void goToWin();
 void win();
 void goToLose();
 void lose();
+void scoreBoard();
+void goToScoreboard();
 
 // random prototype
 void srand();
@@ -38,7 +40,8 @@ enum
     GAME,
     PAUSE,
     WIN,
-    LOSE
+    LOSE,
+    Scoreboard
 };
 int state;
 
@@ -76,6 +79,9 @@ int main()
             case LOSE:
                 lose();
                 break;
+            case Scoreboard:
+                scoreBoard();
+                break;
         }
     }
 }
@@ -83,6 +89,10 @@ int main()
 // sets up GBA
 void initialize()
 {
+    unsigned short colors[NUMCOLORS] = {BLACK, GREY, MAROON, GAMEBG, GOLD, BROWN, SALMON, PINK};
+    for (int i = 0; i < NUMCOLORS; i++) {
+        PALETTE[256-NUMCOLORS+i] = colors[i];
+    }
     REG_DISPCTL = MODE(4) | BG2_ENABLE | DISP_BACKBUFFER;
     
     REG_SOUNDCNT_X = SND_ENABLED;
@@ -187,7 +197,6 @@ void goToPause() {
     drawString4(136, 8, "got too stressed?", PINKID);
     drawString4(130, 18, "you're paused now!", PINKID); 
 
-    // TODO 2.2: wait for vBlank and flip the page
     waitForVBlank();
     flipPage();
 
@@ -201,11 +210,7 @@ void pause() {
     if (BUTTON_PRESSED(BUTTON_START))
         goToGame();
     else if (BUTTON_PRESSED(BUTTON_SELECT))
-        goToLose();
-    
-    REG_SND2CNT = DMG_ENV_VOL(5) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
-    REG_SND2FREQ = NOTE_G6 | SND_RESET;
-    REG_SND1SWEEP = DMG_SWEEP_NUM(7) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
+        goToScoreboard();
 }
 
 // Sets up the win state
@@ -227,8 +232,6 @@ void goToWin() {
     // TODO 2.3: wait for vBlank and flip the page
     waitForVBlank();
     flipPage();
-
-
     state = WIN;
 }
 
@@ -266,8 +269,21 @@ void lose() {
     if (BUTTON_PRESSED(BUTTON_START)) {
         goToStart();
     }
+}
 
-    REG_SND2CNT = DMG_ENV_VOL(0) | DMG_DIRECTION_DECR | DMG_STEP_TIME(0) | DMG_DUTY_50;
-    REG_SND2FREQ = NOTE_G6 | SND_RESET | DMG_FREQ_TIMED;
-    REG_SND1SWEEP = DMG_SWEEP_NUM(0) | DMG_SWEEP_STEPTIME(0) | DMG_SWEEP_DOWN;
+void goToScoreboard() {
+    fillScreen4(SALMONID);
+    drawString4(56, 28, "BEST TIME: ", PINKID);
+    sprintf(buffer, (bestTime != 10000) ? "%d seconds" : "NIL", bestTime);
+    drawString4(126, 28, buffer, PINKID);
+    waitForVBlank();
+    flipPage();
+    state = Scoreboard;
+}
+
+void scoreBoard() {
+    waitForVBlank();
+    if (BUTTON_PRESSED(BUTTON_START)) {
+        goToPause();
+    }
 }

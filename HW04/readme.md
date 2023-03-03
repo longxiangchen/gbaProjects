@@ -8,7 +8,7 @@ The bullets can't reach you from your starting position... but you're just embar
 
 If you lose all lives... you uh..
 
->! You lose!
+>! You lose! (Your score won't get counted, because you failed).
 
 That wasn't so hard to figure out now was it?!
 
@@ -26,13 +26,15 @@ You can navigate the state machine by pressing certain buttons:
 
 ## Start Screen Navigation
 Press 'START' to start the game.
-
 ## GAME Screen Navigation
-Press 'START' to pause the game, although you'll be met with an obnoxious sound... so stop being lazy and get back to the game!
+Press 'START' to pause the game.
 
 ## PAUSE Screen Navigation
-Press 'SELECT' to give up and immediately lose.
+Press 'SELECT' to go to the scoreboard.
 Press 'START' to resume the game.
+
+## Scoreboard Screen Navigation
+Press 'START' to go back to the pause screen, where you can press 'START' again to resume your game.
 
 ## WIN/LOSE Screen Navigation
 Press 'START' to go back to the start screen.
