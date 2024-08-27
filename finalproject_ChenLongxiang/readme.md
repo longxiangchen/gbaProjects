@@ -1,6 +1,6 @@
 # Intro
 
-Welcome to my milestone03.
+Welcome to my Pokemon Game!
 
 Not everything works!
 
